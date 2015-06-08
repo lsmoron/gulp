@@ -1,50 +1,58 @@
 /**
-  @author David Piegza
+ @author David Piegza
 
-  Implements a label for an object.
+ Implements a label for an object.
 
-  It creates an text in canvas and sets the text-canvas as
-  texture of a cube geometry.
+ It creates an text in canvas and sets the text-canvas as
+ texture of a cube geometry.
 
-  Parameters:
-  text: <string>, text of the label
+ Parameters:
+ text: <string>, text of the label
 
-  Example:
-  var label = new THREE.Label("Text of the label");
-  label.position.x = 100;
-  label.position.y = 100;
-  scene.addObject(label);
+ Example:
+ var label = new THREE.Label("Text of the label");
+ label.position.x = 100;
+ label.position.y = 100;
+ scene.addObject(label);
  */
 
-THREE.Label = function(text, parameters) {
-  var parameters = parameters || {};
+THREE.Label = function (text, parameters) {
+    var parameters = parameters || {};
 
-  var labelCanvas = document.createElement( "canvas" );
+    var labelCanvas = document.createElement("canvas");
 
-  function create() {
-    var xc = labelCanvas.getContext("2d");
-    var fontsize = "40pt";
 
-    // set font size to measure the text
-    xc.font = fontsize + " Arial";
-    var len = xc.measureText(text).width;
+    function nearestPow2(aSize) {
+        return Math.pow(2, Math.round(Math.log(aSize) / Math.log(2)));
+    }
 
-    labelCanvas.setAttribute('width', len);
+    function create() {
+        var xc = labelCanvas.getContext("2d");
+        var fontsize = "40pt";
 
-    // set font size again cause it will be reset
-    // when setting a new width
-    xc.font = fontsize + " Arial";
-    xc.textBaseline = 'top';
-    xc.fillText(text, 0, 0);
+        // set font size to measure the text
+        xc.font = fontsize + " Arial";
+        var len = xc.measureText(text).width;
+        labelCanvas.width = labelCanvas.height = nearestPow2(len)
+        //labelCanvas.setAttribute('width', nearestPow2(len));
 
-    var geometry = new THREE.CubeGeometry(len, 200, 0);
-    var xm = new THREE.MeshBasicMaterial({map: new THREE.Texture(labelCanvas), transparent: true});
-    xm.map.needsUpdate = true;
+        // set font size again cause it will be reset
+        // when setting a new width
+        xc.font = fontsize + " Arial";
+        xc.textBaseline = 'top';
+        xc.fillText(text, 0, 0);
 
-    // set text canvas to cube geometry
-    var labelObject = new THREE.Mesh(geometry, xm);
-    return labelObject;
-  }
+        var geometry = new THREE.BoxGeometry(len, 200, 0);
+        var xm = new THREE.MeshBasicMaterial({map: new THREE.Texture(labelCanvas), transparent: true});
+        xm.map.needsUpdate = true;
 
-  return create();
+        // set text canvas to cube geometry
+        var labelObject = new THREE.Mesh(geometry, xm);
+        return labelObject;
+
+        //return THREE.TextGeometry(text)
+
+    }
+
+    return create();
 }

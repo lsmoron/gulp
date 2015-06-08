@@ -179,12 +179,22 @@ Drawing.SimpleGraph = function (options) {
 
         scene = new THREE.Scene();
 
-        var light = new THREE.AmbientLight( 0x404040 );
-        scene.add(light);
+        var ambientLight = new THREE.AmbientLight( 0x404040 );
+        scene.add(ambientLight);
 
-        //var light = new THREE.PointLight( 0xff0000, 1, 1000 );
-        //light.position.set( 0,0, 100 );
-        //scene.add( light );
+        var directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
+        directionalLight.position.set( 0, 1, 0 );
+        scene.add( directionalLight );
+
+        var light = new THREE.PointLight( 0xffffff, 0.5, 0 );
+        light.position.set( 0,0, 1000 );
+        scene.add( light );
+
+        //var cameraLight = new THREE.PointLight( 0xffffff, 1, 0 );
+        //camera.add(cameraLight);
+        //var light1 = new THREE.PointLight( 0xffffff, 1, 2000 );
+        //light1.position.set( 500,500, 0 );
+        //scene.add( light1 );
         // Node geometry
 
         //geometry = new THREE.CubeGeometry(300, 300, 300);
@@ -296,15 +306,15 @@ Drawing.SimpleGraph = function (options) {
      *  Create a node object and add it to the scene.
      */
     function drawNode(node) {
-        var draw_object = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({
+        //var draw_object = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({
+        //    color: node.data.color,
+        //   // opacity: 0.5
+        //}));
+
+        var draw_object = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({
             color: node.data.color,
             opacity: 0.5
         }));
-
-        //var draw_object = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({
-        //    color: node.data.color,
-        //    opacity: 0.8
-        //}));
 
         if (that.show_labels) {
             if (node.data.title != undefined) {
@@ -383,19 +393,23 @@ Drawing.SimpleGraph = function (options) {
             for (var i = 0; i < length; i++) {
                 var node = graph.nodes[i];
                 if (node.data.label_object != undefined) {
-                    node.data.label_object.position.x = node.data.draw_object.position.x;
-                    node.data.label_object.position.y = node.data.draw_object.position.y - 400;
-                    node.data.label_object.position.z = node.data.draw_object.position.z;
                     node.data.label_object.lookAt(camera.position);
-                } else {
-                    if (node.data.title != undefined) {
-                        var label_object = new THREE.Label(node.data.title, node.data.draw_object);
-                    } else {
-                        var label_object = new THREE.Label(node.id, node.data.draw_object);
-                    }
-                    node.data.label_object = label_object;
-                    scene.add(node.data.label_object);
+
+                    node.data.label_object.position.x = node.data.draw_object.position.x;
+                    node.data.label_object.position.y = node.data.draw_object.position.y;
+                    node.data.label_object.position.z = node.data.draw_object.position.z;
+                    node.data.label_object.translateZ(400);
+                    //node.data.label_object.lookAt(camera.position);
                 }
+                //else {
+                //    if (node.data.title != undefined) {
+                //        var label_object = new THREE.Label(node.data.title, node.data.draw_object);
+                //    } else {
+                //        var label_object = new THREE.Label(node.id, node.data.draw_object);
+                //    }
+                //    node.data.label_object = label_object;
+                //    scene.add(node.data.label_object);
+                //}
             }
         } else {
             var length = graph.nodes.length;
