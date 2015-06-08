@@ -58,20 +58,6 @@ module.exports = {
             outputName: 'page.js',
             // list of externally available modules to exclude from the bundle
             external: ['jquery', 'underscore']
-        },{
-                entries:[
-                    src + '/javascript/lib/test.js',
-                    src + '/javascript/lib/Graph.js',
-                    src + '/javascript/lib/utils/Stats.js',
-                    src + '/javascript/lib/utils/TrackballControls.js',
-                    src + '/javascript/lib/utils/Label.js',
-                    src + '/javascript/lib/utils/ObjectSelection.js',
-                    src + '/javascript/lib/layouts/force-directed-layout.js',
-                    src + '/javascript/lib/drawings/simple_graph.js'
-                ],
-
-                dest: dest,
-                outputName: 'graph.js'
         }
         ]
     },

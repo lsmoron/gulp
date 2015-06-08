@@ -47,7 +47,7 @@
   reached_limit() - returns true if the limit has been reached, otherwise false
 
  */
-console.log("Graph")
+
 function Graph(options) {
   this.options = options || {};
   this.nodeSet = {};
@@ -118,3 +118,9 @@ function Edge(source, target) {
   this.target = target;
   this.data = {};
 }
+
+module.exports={
+  "graph":Graph,
+  "node":Node,
+  "edge":Edge
+};

@@ -2,7 +2,7 @@
 
 var $ = require('jquery');
 var _ = require('underscore');
-
+var Drawing = require('./lib/drawings/simple_graph.js')
 
 console.log('page.js loaded!');
 

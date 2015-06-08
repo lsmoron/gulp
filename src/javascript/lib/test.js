@@ -6,3 +6,5 @@ var g_g ="test";
 function test(){
     console.log("test")
 }
+
+module.exports = test;

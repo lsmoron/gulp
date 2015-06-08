@@ -14,7 +14,7 @@
 
 THREE.ObjectSelection = function(parameters) {
   var parameters = parameters || {};
-
+  var raycaster = new THREE.Raycaster();
   this.domElement = parameters.domElement || document;
   this.projector = new THREE.Projector();
   this.INTERSECTED;
@@ -41,34 +41,44 @@ THREE.ObjectSelection = function(parameters) {
   }
 
   this.render = function(scene, camera) {
-    var vector = new THREE.Vector3( mouse.x, mouse.y, 0.5 );
-    this.projector.unprojectVector( vector, camera );
+    raycaster.setFromCamera( mouse, camera );
 
-    var raycaster = new THREE.Raycaster(camera.position, vector.sub(camera.position).normalize());
+    // calculate objects intersecting the picking ray
+    var intersects = raycaster.intersectObjects( scene.children );
 
-    var intersects = raycaster.intersectObject(scene, true);
+    for ( var i = 0; i < intersects.length; i++ ) {
 
-    if( intersects.length > 0 ) {
-      if ( this.INTERSECTED != intersects[ 0 ].object ) {
-        if ( this.INTERSECTED ) {
-          this.INTERSECTED.material.color.setHex( this.INTERSECTED.currentHex );
-        }
+      intersects[ i ].object.material.color.set( 0xff0000 );
 
-        this.INTERSECTED = intersects[ 0 ].object;
-        this.INTERSECTED.currentHex = this.INTERSECTED.material.color.getHex();
-        this.INTERSECTED.material.color.setHex( 0xff0000 );
-        if(typeof callbackSelected === 'function') {
-          callbackSelected(this.INTERSECTED);
-        }
-      }
-    } else {
-      if ( this.INTERSECTED ) {
-        this.INTERSECTED.material.color.setHex( this.INTERSECTED.currentHex );
-      }
-      this.INTERSECTED = null;
-      if(typeof callbackSelected === 'function') {
-        callbackSelected(this.INTERSECTED);
-      }
     }
+    //var vector = new THREE.Vector3( mouse.x, mouse.y, 0.5 );
+    //this.projector.unprojectVector( vector, camera );
+    //
+    //var raycaster = new THREE.Raycaster(camera.position, vector.sub(camera.position).normalize());
+    //
+    //var intersects = raycaster.intersectObject(scene, true);
+    //
+    //if( intersects.length > 0 ) {
+    //  if ( this.INTERSECTED != intersects[ 0 ].object ) {
+    //    if ( this.INTERSECTED ) {
+    //      this.INTERSECTED.material.color.setHex( this.INTERSECTED.currentHex );
+    //    }
+    //
+    //    this.INTERSECTED = intersects[ 0 ].object;
+    //    this.INTERSECTED.currentHex = this.INTERSECTED.material.color.getHex();
+    //    this.INTERSECTED.material.color.setHex( 0xff0000 );
+    //    if(typeof callbackSelected === 'function') {
+    //      callbackSelected(this.INTERSECTED);
+    //    }
+    //  }
+    //} else {
+    //  if ( this.INTERSECTED ) {
+    //    this.INTERSECTED.material.color.setHex( this.INTERSECTED.currentHex );
+    //  }
+    //  this.INTERSECTED = null;
+    //  if(typeof callbackSelected === 'function') {
+    //    callbackSelected(this.INTERSECTED);
+    //  }
+    //}
   }
 }

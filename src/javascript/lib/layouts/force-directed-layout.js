@@ -240,3 +240,5 @@ Layout.ForceDirected = function(graph, options) {
     layout_iterations = this.max_iterations;
   }
 };
+
+module.exports=Layout;
