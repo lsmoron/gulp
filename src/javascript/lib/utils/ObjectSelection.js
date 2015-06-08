@@ -23,12 +23,15 @@ THREE.ObjectSelection = function (parameters) {
 
     var callbackSelected = parameters.selected;
     var callbackClicked = parameters.clicked;
-    var mouse = {x: 0, y: 0};
+    var mouse = new THREE.Vector2();
 
+    var trace
     this.domElement.addEventListener('mousemove', onDocumentMouseMove, false);
     function onDocumentMouseMove(event) {
-        mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-        mouse.y = -( event.clientY / window.innerHeight ) * 2 + 1;
+        var rect = this.getBoundingClientRect()
+        mouse.x = ( (event.clientX-rect.left) / this.width ) * 2 - 1;
+        mouse.y = -( (event.clientY-rect.top) / this.height ) * 2 + 1;
+        //console.log(mouse);
     }
 
     this.domElement.addEventListener('click', onDocumentMouseClick, false);
@@ -40,12 +43,35 @@ THREE.ObjectSelection = function (parameters) {
         }
     }
 
+    this.showTrace = function (scene, camera, raycaster) {
+
+        if(!trace) {
+            material = new THREE.LineBasicMaterial({color: 0x00f0ff, opacity: 1, linewidth: 10});
+
+            var tmp_geo = new THREE.Geometry();
+            tmp_geo.vertices.push(raycaster.ray.origin);
+            tmp_geo.vertices.push(raycaster.ray.direction.multiplyScalar(10000));
+
+            trace = new THREE.Line(tmp_geo, material, THREE.LinePieces);
+            scene.add(trace)
+        }else{
+
+            trace.geometry.vertices[1]=raycaster.ray.origin.add(new THREE.Vector3( 1, 1, 0 ))
+
+            trace.geometry.vertices[0]=raycaster.ray.direction.multiplyScalar(10000)
+            trace.geometry.verticesNeedUpdate = true
+
+        }
+
+    }
+
     this.render = function (scene, camera) {
         raycaster.setFromCamera(mouse, camera);
 
         // calculate objects intersecting the picking ray
         var intersects = raycaster.intersectObjects(scene.children);
 
+        //this.showTrace(scene, camera,raycaster)
         // for ( var i = 0; i < intersects.length; i++ ) {
 
         //  intersects[ i ].object.material.color.set( 0xff0000 );
@@ -58,13 +84,19 @@ THREE.ObjectSelection = function (parameters) {
         //
         //var intersects = raycaster.intersectObject(scene, true);
         //
-        if (intersects.length > 0) {
-            if (this.INTERSECTED != intersects[0].object) {
+        var element
+        for(var i=0;i<intersects.length;i++){
+            if(intersects[i].object.type!=='Line'){
+                element=intersects[i].object
+            }
+        }
+        if (element) {
+            if (this.INTERSECTED != element) {
                 if (this.INTERSECTED) {
                     this.INTERSECTED.material.color.setHex(this.INTERSECTED.currentHex);
                 }
 
-                this.INTERSECTED = intersects[0].object;
+                this.INTERSECTED = element;
                 this.INTERSECTED.currentHex = this.INTERSECTED.material.color.getHex();
                 this.INTERSECTED.material.color.setHex(0x0000ff);
                 if (typeof callbackSelected === 'function') {

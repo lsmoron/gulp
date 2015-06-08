@@ -345,7 +345,7 @@ Drawing.SimpleGraph = function (options) {
      *  Create an edge object (line) and add it to the scene.
      */
     function drawEdge(source, target) {
-        material = new THREE.LineBasicMaterial({color: 0x00f000, opacity: 1, linewidth: 0.5});
+        material = new THREE.LineBasicMaterial({color: 0x00f000, opacity: 0.5, linewidth: 1});
 
         var tmp_geo = new THREE.Geometry();
         tmp_geo.vertices.push(source.data.draw_object.position);
