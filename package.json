@@ -19,7 +19,6 @@
   "browser": {
     "underscore": "backbone/node_modules/underscore",
     "plugin": "./src/javascript/vendor/jquery-plugin.js"
-
   },
   "browserify": {
     "transform": [
@@ -36,7 +35,6 @@
       ]
     },
     "three": "global:THREE"
-
   },
   "devDependencies": {
     "browser-sync": "~2.2.2",
@@ -76,6 +74,7 @@
   "dependencies": {
     "backbone": "~1.1.2",
     "jquery": "~2.1.0",
-    "lodash":"*"
+    "lodash": "*",
+    "tween.js": "^0.14.0"
   }
 }

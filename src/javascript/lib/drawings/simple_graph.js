@@ -55,6 +55,7 @@ require('../utils/TrackballControls.js')
 require('../utils/Label.js')
 require('../utils/ObjectSelection.js')
 var Layout = require('../layouts/force-directed-layout.js')
+var TWEEN = require('tween.js');
 
 
 var nodes = [
@@ -147,6 +148,9 @@ Drawing.SimpleGraph = function (options) {
 
     var that = this;
 
+    var animateToNodeEnabled=false
+     var clock = new THREE.Clock;
+    var tween;
     init();
     createGraph();
     animate();
@@ -214,14 +218,29 @@ Drawing.SimpleGraph = function (options) {
                     }
                 },
                 clicked: function (obj) {
-                    console.log(obj);
+                    console.log(camera.position.x)
+                    console.log(obj.position)
+                    tween = new TWEEN.Tween({x:camera.position.x, y: camera.position.y, z: camera.position.z, rot: 0}) // start values
+                        .to({x: obj.position.x, y: obj.position.y, z: obj.position.z, rot: 0}, 2000) // end values and time
+                        .easing(TWEEN.Easing.Sinusoidal.InOut)
+                        .onUpdate(function () {
+                            camera.position.set(this.x, this.y, this.z);
+                            //console.log(this)
+                          //  camera.rotation.set(this.rot, this.rot, this.rot);
+                        })
+                        .onComplete(function (){
+                            console.log("Done")
+                        })
+                        //.repeat(Infinity)
+                        //.yoyo(false)
+                        .start();
                 }
             });
         }
 
         //  document.body.appendChild(renderer.domElement);
         $("#scene").append(renderer.domElement)
-        // Stats.js
+        // Stats.js`
         if (that.show_stats) {
             stats = new Stats();
             stats.domElement.style.position = 'absolute';
@@ -238,6 +257,7 @@ Drawing.SimpleGraph = function (options) {
             document.body.appendChild(info);
         }
     }
+
 
 
     /**
@@ -263,33 +283,6 @@ Drawing.SimpleGraph = function (options) {
                 drawEdge(nodesDic[edges[i].src], nodesDic[edges[i].dst]);
             }
         }
-        //var node = new Node(0);
-        //node.data.title = "This is node " + node.id;
-        //graph.addNode(node);
-        //drawNode(node);
-        //
-        //var nodes = [];
-        //nodes.push(node);
-        //
-        //var steps = 1;
-        //while(nodes.length != 0 && steps < that.nodes_count) {
-        //  var node = nodes.shift();
-        //
-        //  var numEdges = randomFromTo(1, that.edges_count);
-        //  for(var i=1; i <= numEdges; i++) {
-        //    var target_node = new Node(i*steps);
-        //    if(graph.addNode(target_node)) {
-        //      target_node.data.title = "This is node " + target_node.id;
-        //
-        //      drawNode(target_node);
-        //      nodes.push(target_node);
-        //      if(graph.addEdge(node, target_node)) {
-        //        drawEdge(node, target_node);
-        //      }
-        //    }
-        //  }
-        //  steps++;
-        //}
 
         that.layout_options.width = that.layout_options.width || 2000;
         that.layout_options.height = that.layout_options.height || 2000;
@@ -364,12 +357,21 @@ Drawing.SimpleGraph = function (options) {
     function animate() {
         requestAnimationFrame(animate);
         controls.update();
+        //animateToNode();
+        if(tween) {
+            TWEEN.update();
+        }
         render();
         if (that.show_info) {
             printInfo();
         }
     }
 
+    //function animateToNode(){
+    //    if(animateToNodeEnabled){
+    //        console.log(clock.getDelta());
+    //    }
+    //}
 
     function render() {
         // Generate layout if not finished
@@ -399,17 +401,8 @@ Drawing.SimpleGraph = function (options) {
                     node.data.label_object.position.y = node.data.draw_object.position.y;
                     node.data.label_object.position.z = node.data.draw_object.position.z;
                     node.data.label_object.translateZ(400);
-                    //node.data.label_object.lookAt(camera.position);
+
                 }
-                //else {
-                //    if (node.data.title != undefined) {
-                //        var label_object = new THREE.Label(node.data.title, node.data.draw_object);
-                //    } else {
-                //        var label_object = new THREE.Label(node.id, node.data.draw_object);
-                //    }
-                //    node.data.label_object = label_object;
-                //    scene.add(node.data.label_object);
-                //}
             }
         } else {
             var length = graph.nodes.length;
